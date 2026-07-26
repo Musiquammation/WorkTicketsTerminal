@@ -1,5 +1,5 @@
-from shellTypes import Command
-
+from shellTypes import Command, CommandArgument
+from commands import *
 
 def handle_help(kwargs):
     print("\nAvailable commands:")
@@ -13,6 +13,15 @@ COMMAND_REGISTRY = [
         path=["help"],
         callback=handle_help,
         description="Print all commands"
+    ),
+
+    Command(
+        path=["workflow", "status", "add"],
+        callback=workflow_status_add,
+        description="Add status in workflow",
+        arguments=[
+            CommandArgument(name="name")
+        ]
     )
     
 ]
