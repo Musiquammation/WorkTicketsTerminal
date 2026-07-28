@@ -1,5 +1,7 @@
 from typing import Callable, List, Optional, Any, Type
 
+from Database import Database
+
 
 class CommandArgument:
     """Positional argument (e.g. mainArg0)"""
@@ -10,7 +12,7 @@ class CommandArgument:
         description: str = "",
         required: bool = True,
         default: Any = None,
-        choices_func: Optional[Callable[[], List[str]]] = None,
+        choices_func: Optional[Callable[[Database], List[str]]] = None,
     ):
         self.name = name
         self.description = description
@@ -18,9 +20,9 @@ class CommandArgument:
         self.default = default
         self.choices_func = choices_func
 
-    def get_completions(self) -> List[str]:
+    def get_completions(self, db: Database) -> List[str]:
         if self.choices_func:
-            return self.choices_func()
+            return self.choices_func(db)
         return []
 
 
@@ -40,16 +42,16 @@ class CommandTag:
         name: str,
         type_cast: Type = str,
         description: str = "",
-        choices_func: Optional[Callable[[], List[str]]] = None,
+        choices_func: Optional[Callable[[Database], List[str]]] = None,
     ):
         self.name = name  # Must include the dash, e.g. "-status"
         self.type_cast = type_cast  # Automatically converts the value (int, float, str)
         self.description = description
         self.choices_func = choices_func
 
-    def get_completions(self) -> List[str]:
+    def get_completions(self, db: Database) -> List[str]:
         if self.choices_func:
-            return self.choices_func()
+            return self.choices_func(db)
         return []
 
 
@@ -57,7 +59,7 @@ class Command:
     def __init__(
         self,
         path: List[str],
-        callback: Callable,
+        callback: Callable[[Database,dict[str,Any]], None],
         arguments: Optional[List[CommandArgument]] = None,
         flags: Optional[List[CommandFlag]] = None,
         tags: Optional[List[CommandTag]] = None,

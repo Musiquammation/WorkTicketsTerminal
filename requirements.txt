@@ -2,3 +2,5 @@ click
 textual
 prompt_toolkit
 sqlalchemy
+dotenv
+psycopg2-binary

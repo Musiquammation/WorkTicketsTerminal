@@ -1,7 +1,7 @@
 from shellTypes import Command, CommandArgument, CommandFlag, CommandTag
 from commands import *
 
-def handle_help(kwargs):
+def handle_help(db, kwargs):
     print("\nAvailable commands:")
     for cmd in COMMAND_REGISTRY:
         print(f"  - {cmd.name}")

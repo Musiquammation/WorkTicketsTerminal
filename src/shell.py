@@ -5,6 +5,7 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import Completer, Completion
 
 from COMMAND_REGISTRY import COMMAND_REGISTRY
+from Database import Database
 from shellTypes import Command
 
 
@@ -32,8 +33,9 @@ class CommandArgumentError(ShellError):
 # --- Completer ---
 
 class RegistryCompleter(Completer):
-	def __init__(self, registry: List[Command]):
+	def __init__(self, registry: List[Command], db: Database):
 		self.registry = registry
+		self.db = db
 
 	def get_completions(self, document, complete_event):
 		text = document.text_before_cursor
@@ -113,7 +115,7 @@ class RegistryCompleter(Completer):
 
 			# Complete the value of a tag
 			if expected_tag:
-				completions = expected_tag.get_completions()
+				completions = expected_tag.get_completions(self.db)
 
 			else:
 				# Complete flags/tags
@@ -128,7 +130,7 @@ class RegistryCompleter(Completer):
 				else:
 					if positional_index < len(matched_command.arguments):
 						argument = matched_command.arguments[positional_index]
-						completions = argument.get_completions()
+						completions = argument.get_completions(self.db)
 
 			for completion in completions:
 				if completion.startswith(current_word):
@@ -140,7 +142,7 @@ class RegistryCompleter(Completer):
 
 # --- Execution Engine ---
 
-def execute_command(line: str, registry: List[Command]):
+def execute_command(db: Database, line: str, registry: List[Command]):
 	try:
 		tokens = shlex.split(line)
 	except ValueError as e:
@@ -241,7 +243,7 @@ def execute_command(line: str, registry: List[Command]):
 				**parsed_tags,
 			}
 
-			cmd.callback(kwargs)
+			cmd.callback(db, kwargs)
 			return
 
 	raise CommandNotFoundError("Unknown command. Type 'help' to list commands or 'exit' to quit.")
@@ -249,9 +251,9 @@ def execute_command(line: str, registry: List[Command]):
 
 # --- Main Shell Loop ---
 
-def shell():
+def shell(db: Database):
 	session = PromptSession(
-		completer=RegistryCompleter(COMMAND_REGISTRY)
+		completer=RegistryCompleter(COMMAND_REGISTRY, db)
 	)
 
 	print("CLI started. Type 'help' to list commands or 'exit' to quit.")
@@ -266,7 +268,7 @@ def shell():
 			if line == "exit":
 				break
 
-			execute_command(line, COMMAND_REGISTRY)
+			execute_command(db, line, COMMAND_REGISTRY)
 
 		# Handle known shell parsing and validation errors
 		except CommandArgumentError as e:
