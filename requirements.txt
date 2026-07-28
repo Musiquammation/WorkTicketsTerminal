@@ -1,3 +1,4 @@
 click
 textual
 prompt_toolkit
+sqlalchemy
