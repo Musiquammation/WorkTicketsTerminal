@@ -9,14 +9,14 @@ load_dotenv()
 
 
 def getEnv(key):
-    value = os.getenv(key)
-    if value is None:
-        raise Exception("Missing " + key)
+	value = os.getenv(key)
+	if value is None:
+		raise Exception("Missing " + key)
 
-    return value
+	return value
 
 
 if __name__ == "__main__":
-    db = Database(getEnv("DATABASE_URL"))
-    shell(db)
+	db = Database(getEnv("DATABASE_URL"))
+	shell(db)
 
