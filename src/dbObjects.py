@@ -101,23 +101,19 @@ class Ticket(Base):
 	id: Mapped[int] = mapped_column(
 		Integer,
 		primary_key=True,
+		autoincrement=True,
 	)
 
-	parent_project: Mapped[Optional[str]] = mapped_column(nullable=True)
-	parent_id: Mapped[Optional[int]] = mapped_column(nullable=True)
+	parent_id: Mapped[Optional[int]] = mapped_column(
+		ForeignKey("ticket.id"),
+		nullable=True,
+	)
 
 	title: Mapped[str] = mapped_column(String)
 	desc: Mapped[str] = mapped_column(Text)
 
 	status: Mapped[str] = mapped_column(
 		ForeignKey("status.name"),
-	)
-
-	__table_args__ = (
-		ForeignKeyConstraint(
-			["parent_project", "parent_id"],
-			["ticket.project", "ticket.id"],
-		),
 	)
 
 
@@ -132,6 +128,7 @@ class Event(Base):
 	id: Mapped[int] = mapped_column(
 		Integer,
 		primary_key=True,
+		autoincrement=True
 	)
 
 	date: Mapped[datetime] = mapped_column(
