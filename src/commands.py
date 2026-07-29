@@ -129,7 +129,6 @@ def cb_project_update(db: Database, kwargs: dict[str, Any]):
 		start_status=kwargs.get("start"),
 		clean_start=kwargs.get("cleanStart", False)
 	)
-	print(kwargs, p)
 	print(f"Updated Project {p.name}: Start Status is now {p.default_start_status}")
 
 def cb_project_login(db: Database, kwargs: dict[str, Any]):
