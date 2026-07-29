@@ -258,7 +258,12 @@ def shell(db: Database):
 
 	print("CLI started. Type 'help' to list commands or 'exit' to quit.")
 
+	RED = "\033[31m"
+	RESET = "\033[0m"
+
+
 	while True:
+
 		try:
 			line = session.prompt("> ").strip()
 
@@ -272,13 +277,13 @@ def shell(db: Database):
 
 		# Handle known shell parsing and validation errors
 		except CommandArgumentError as e:
-			print(f"\n[!] Error: {e}")
+			print(f"\n{RED}[!] Error: {e}{RESET}")
 			if e.command:
 				print()
 				e.command.print_help()
 				
 		except ShellError as e:
-			print(f"[!] Error: {e}")
+			print(f"{RED}[!] Error: {e}{RESET}")
 
 		# Catch unexpected runtime errors inside the command callback
 	
