@@ -73,7 +73,7 @@ class Database:
 			else:
 				if transition:
 					if not rename:
-						raise ValueError("Transition already exists. Use -rename to rename it.")
+						raise ValueError("Transition already exists. Use -label to relabel it.")
 					transition.name = transition_name
 				else:
 					session.add(Transition(origin=origin, target=target, name=transition_name))

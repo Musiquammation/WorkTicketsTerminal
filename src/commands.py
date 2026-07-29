@@ -84,8 +84,8 @@ def cb_workflow_link(db: Database, kwargs: dict[str, Any]):
     db.link_statuses(
         origin=kwargs["origin"],
         target=kwargs["target"],
-        transition_name=kwargs.get("-rename"), # using rename param to fetch optional name
-        rename="-rename" in kwargs,
+        transition_name=kwargs.get("-label"),
+        rename="-label" in kwargs,
         delete_link=kwargs.get("-delete", False),
         force=kwargs.get("-force", False)
     )

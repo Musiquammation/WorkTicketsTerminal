@@ -67,9 +67,11 @@ COMMAND_REGISTRY = [
 			CommandArgument("target", "Target status", required=True, choices_func=get_status_choices)
 		],
 		flags=[
-			CommandFlag("-rename", "Allow renaming if the transition already exists"),
 			CommandFlag("-delete", "Delete the transition if no events use it"),
 			CommandFlag("-force", "Delete the transition and all associated events")
+		],
+		tags=[
+			CommandTag("-label", str, "Label of the transition")
 		],
 		description="Create, rename, or delete a transition between two statuses."
 	),
