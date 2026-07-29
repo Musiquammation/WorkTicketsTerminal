@@ -11,7 +11,7 @@ current_project = None
 
 def require_project(kwargs: dict[str, Any]) -> str:
 	"""Gets project from args, falls back to config, or raises Error."""
-	proj = kwargs.get("-project")
+	proj = kwargs.get("project")
 	if not proj:
 		proj = current_project
 		
@@ -60,23 +60,23 @@ def get_ticket_choices(db: Database) -> List[str]:
 def cb_workflow_add(db: Database, kwargs: dict[str, Any]):
 	db.add_status(
 		name=kwargs["name"],
-		description=kwargs.get("-desc"),
-		color=kwargs.get("-color", "default"),
-		bold=kwargs.get("-bold", False),
-		start=kwargs.get("-start", False),
-		final=kwargs.get("-final", False),
+		description=kwargs.get("desc"),
+		color=kwargs.get("color", "default"),
+		bold=kwargs.get("bold", False),
+		start=kwargs.get("start", False),
+		final=kwargs.get("final", False),
 	)
 	print(f"Status '{kwargs['name']}' added.")
 
 def cb_workflow_remove(db: Database, kwargs: dict[str, Any]):
-	db.remove_status(kwargs["name"], force=kwargs.get("-force", False))
+	db.remove_status(kwargs["name"], force=kwargs.get("force", False))
 	print(f"Status '{kwargs['name']}' removed.")
 
 def cb_workflow_style(db: Database, kwargs: dict[str, Any]):
 	db.style_status(
 		name=kwargs["name"],
-		color=kwargs.get("-color"),
-		bold=kwargs.get("-bold")
+		color=kwargs.get("color"),
+		bold=kwargs.get("bold")
 	)
 	print(f"Status '{kwargs['name']}' style updated.")
 
@@ -84,10 +84,10 @@ def cb_workflow_link(db: Database, kwargs: dict[str, Any]):
 	db.link_statuses(
 		origin=kwargs["origin"],
 		target=kwargs["target"],
-		transition_name=kwargs.get("-label"),
+		transition_name=kwargs.get("label"),
 		rename="-label" in kwargs,
-		delete_link=kwargs.get("-delete", False),
-		force=kwargs.get("-force", False)
+		delete_link=kwargs.get("delete", False),
+		force=kwargs.get("force", False)
 	)
 	print("Transition processed.")
 
@@ -114,7 +114,7 @@ def cb_project_add(db: Database, kwargs: dict[str, Any]):
 	print(f"Project '{kwargs['name']}' added.")
 
 def cb_project_remove(db: Database, kwargs: dict[str, Any]):
-	if not kwargs.get("-confirm"):
+	if not kwargs.get("confirm"):
 		raise ValueError("Missing -confirm flag to delete project.")
 	db.remove_project(kwargs["name"])
 	print(f"Project '{kwargs['name']}' removed.")
@@ -128,7 +128,7 @@ def cb_project_update(db: Database, kwargs: dict[str, Any]):
 	p = db.update_project(
 		name=require_project(kwargs), # assuming we update current project if not explicitly designed otherwise
 		start_status=kwargs.get("start"),
-		clean_start=kwargs.get("-cleanStart", False)
+		clean_start=kwargs.get("cleanStart", False)
 	)
 	print(kwargs, p)
 	print(f"Updated Project {p.name}: Start Status is now {p.default_start_status}")
@@ -159,8 +159,8 @@ def cb_ticket_list(db: Database, kwargs: dict[str, Any]):
 
 def cb_ticket_add(db: Database, kwargs: dict[str, Any]):
 	proj = require_project(kwargs)
-	title = kwargs.get("-title")
-	desc = kwargs.get("-desc")
+	title = kwargs.get("title")
+	desc = kwargs.get("desc")
 	
 	if not title or not desc:
 		content = open_vim(f"{title or ''}\n\n{desc or ''}")
@@ -168,7 +168,7 @@ def cb_ticket_add(db: Database, kwargs: dict[str, Any]):
 		title = parts[0] if len(parts) > 0 else ""
 		desc = parts[1] if len(parts) > 1 else ""
 
-	ticket = db.add_ticket(project=proj, title=title, desc=desc, status=kwargs.get("-status"))
+	ticket = db.add_ticket(project=proj, title=title, desc=desc, status=kwargs.get("status"))
 	print(f"Ticket {int_to_hex(ticket.id)} created with status [{ticket.status}].")
 
 def cb_ticket_delete(db: Database, kwargs: dict[str, Any]):
@@ -184,9 +184,9 @@ def cb_ticket_rename(db: Database, kwargs: dict[str, Any]):
 	if not ticket:
 		raise ValueError("Ticket not found")
 
-	title = kwargs.get("-title")
+	title = kwargs.get("title")
 	if not title:
-		init_content = "" if kwargs.get("-emptyVim") else ticket.title
+		init_content = "" if kwargs.get("emptyVim") else ticket.title
 		title = open_vim(init_content)
 
 	db.update_ticket(proj, ticket_id, title=title)
@@ -199,9 +199,9 @@ def cb_ticket_redesc(db: Database, kwargs: dict[str, Any]):
 	if not ticket:
 		raise ValueError("Ticket not found")
 
-	desc = kwargs.get("-desc")
+	desc = kwargs.get("desc")
 	if not desc:
-		init_content = "" if kwargs.get("-emptyVim") else ticket.desc
+		init_content = "" if kwargs.get("emptyVim") else ticket.desc
 		desc = open_vim(init_content)
 
 	db.update_ticket(proj, ticket_id, desc=desc)
@@ -231,7 +231,7 @@ def cb_ticket_move(db: Database, kwargs: dict[str, Any]):
 def cb_ticket_history(db: Database, kwargs: dict[str, Any]):
 	proj = require_project(kwargs)
 	ticket_id = hex_to_int(kwargs["id"]) if kwargs.get("id") else None
-	limit = kwargs.get("-limit", 8)
+	limit = kwargs.get("limit", 8)
 	
 	events = db.get_ticket_history(proj, ticket_id, limit)
 	for e in events:
