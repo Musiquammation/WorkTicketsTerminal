@@ -4,6 +4,7 @@ import tempfile
 import subprocess
 from typing import Any, List, Optional
 from Database import Database
+import COLORS
 
 # --- CLI Context Helpers ---
 
@@ -92,16 +93,14 @@ def cb_workflow_link(db: Database, kwargs: dict[str, Any]):
 	print("Transition processed.")
 
 def cb_workflow_show(db: Database, kwargs: dict[str, Any]):
-	YELLOW = "\033[0;33m"
-	RESET = "\033[0m"
 	status_name = kwargs.get("status")
 	details = db.get_status_details(status_name)
 	for s in details:
 		msg = f"Status: {s.name}"
 		if s.start:
-			msg += f" {YELLOW}(start){RESET}"
+			msg += f" {COLORS.YELLOW}(start){COLORS.RESET}"
 		if s.final:
-			msg += f" {YELLOW}(final){RESET}"
+			msg += f" {COLORS.YELLOW}(final){COLORS.RESET}"
 
 		print(msg)
 		if s.desc:

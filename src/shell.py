@@ -7,7 +7,7 @@ from prompt_toolkit.completion import Completer, Completion
 from COMMAND_REGISTRY import COMMAND_REGISTRY
 from Database import Database
 from shellTypes import Command
-
+import COLORS
 
 # --- Error Handling System ---
 
@@ -258,10 +258,6 @@ def shell(db: Database):
 
 	print("CLI started. Type 'help' to list commands or 'exit' to quit.")
 
-	RED = "\033[31m"
-	RESET = "\033[0m"
-
-
 	while True:
 
 		try:
@@ -277,13 +273,13 @@ def shell(db: Database):
 
 		# Handle known shell parsing and validation errors
 		except CommandArgumentError as e:
-			print(f"\n{RED}[!] Error: {e}{RESET}")
+			print(f"\n{COLORS.RED}[!] Error: {e}{COLORS.RESET}")
 			if e.command:
 				print()
 				e.command.print_help()
 				
 		except ShellError as e:
-			print(f"{RED}[!] Error: {e}{RESET}")
+			print(f"{COLORS.RED}[!] Error: {e}{COLORS.RESET}")
 
 		# Catch unexpected runtime errors inside the command callback
 	
@@ -296,7 +292,5 @@ def shell(db: Database):
 			break
 		
 		except Exception as e:
-			RED = "\033[31m"
-			RESET = "\033[0m"
-			print(f"{RED}[!] Unexpected error during command execution: {e}{RESET}")
+			print(f"{COLORS.RED}[!] Unexpected error during command execution: {e}{COLORS.RESET}")
 
