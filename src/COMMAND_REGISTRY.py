@@ -201,7 +201,7 @@ COMMAND_REGISTRY = [
 		callback=cb_ticket_move,
 		arguments=[
 			CommandArgument("id", "Hex ID of the ticket", required=True, choices_func=get_ticket_choices),
-			CommandArgument("status", "Target status", required=False, choices_func=get_status_choices)
+			CommandArgument("status", "Target status", required=False, choices_func=get_transition_status_choices)
 		],
 		description="Move a ticket to a new status, creating an Event. Shows available statuses if omitted."
 	),

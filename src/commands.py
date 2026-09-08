@@ -56,6 +56,24 @@ def get_ticket_choices(db: Database) -> List[str]:
 		return []
 	return db.get_ticket_ids_hex(current_project)
 
+def get_transition_status_choices(db: Database, args: List[str]) -> List[str]:
+	if len(args) == 0:
+		return db.get_status_names()
+
+	global current_project
+	if not current_project:
+		return []
+
+	ticket_id = hex_to_int(args[0])
+	ticket = db.get_ticket(current_project, ticket_id)
+
+	if not ticket:
+		return []
+
+	transitions = db.get_transitions_from(ticket.status)
+	return [t.target for t in transitions]
+
+
 # --- Callbacks ---
 
 def cb_workflow_add(db: Database, kwargs: dict[str, Any]):

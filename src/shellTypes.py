@@ -1,7 +1,7 @@
-from typing import Callable, List, Optional, Any, Type
+from typing import Callable, List, Optional, Any, Type, cast
 
 from Database import Database
-
+import inspect
 
 class CommandArgument:
 	"""Positional argument (e.g. mainArg0)"""
@@ -12,7 +12,10 @@ class CommandArgument:
 		description: str = "",
 		required: bool = True,
 		default: Any = None,
-		choices_func: Optional[Callable[[Database], List[str]]] = None,
+		choices_func: Optional[
+			Callable[[Database, List[str]], List[str]] |
+			Callable[[Database], List[str]]
+		] = None,
 	):
 		self.name = name
 		self.description = description
@@ -20,10 +23,20 @@ class CommandArgument:
 		self.default = default
 		self.choices_func = choices_func
 
-	def get_completions(self, db: Database) -> List[str]:
-		if self.choices_func:
-			return self.choices_func(db)
-		return []
+	def get_completions(self, db: Database, args: List[str]) -> List[str]:
+		if self.choices_func is None:
+			return []
+
+		if len(inspect.signature(self.choices_func).parameters) == 1:
+			return cast(
+				Callable[[Database], List[str]],
+				self.choices_func
+			)(db)
+
+		return cast(
+			Callable[[Database, List[str]], List[str]],
+			self.choices_func
+		)(db, args)
 
 
 class CommandFlag:

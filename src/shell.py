@@ -108,7 +108,9 @@ class RegistryCompleter(Completer):
 					i += 1
 
 				else:
-					positional_index += 1
+					if token:
+						positional_index += 1
+
 					i += 1
 
 			completions = []
@@ -129,8 +131,15 @@ class RegistryCompleter(Completer):
 				# Complete positional argument values
 				else:
 					if positional_index < len(matched_command.arguments):
+						line_arguments = (
+							previous_words[len(matched_command.path):]
+						)
 						argument = matched_command.arguments[positional_index]
-						completions = argument.get_completions(self.db)
+
+						completions = argument.get_completions(
+							self.db,
+							line_arguments
+						)
 
 			for completion in completions:
 				if completion.startswith(current_word):
